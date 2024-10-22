@@ -58,6 +58,9 @@ def check_accounts(file_path):
             # Yanıtı kontrol et
             if response.status_code == 200:
                 response_data = response.json()
+                # Yanıtı ve denenen e-posta ile şifreyi yazdır
+                print(Fore.BLUE + f"Denenen Hesap: {email}:{password} - Yanıt: {response.text}")
+                
                 if 'success' in response_data and response_data['success']:
                     print(Fore.GREEN + Style.BRIGHT + f"Giren Hesap: {email}:{password}")
                 else:
